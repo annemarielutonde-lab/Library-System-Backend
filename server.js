@@ -7,7 +7,7 @@ const { getFirestore } = require('firebase-admin/firestore');
 
 
 // 2. Load the VIP keys
-const serviceAccount = require('./Firebase-Keys.json');
+const serviceAccount = require('./Firebase-keys.json');
 
 
 // 3. Turn the keys in the ignition using the new 'cert' function
