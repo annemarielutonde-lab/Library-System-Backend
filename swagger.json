@@ -1,0 +1,33 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Library Management API",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url":"http://localhost:3000",
+            "description":"Development server"
+        },
+        {
+            "url":"https://library-system-backend-nakb.onrender.com",
+            "description":"Production server"
+        }
+    ],
+    "paths":{
+        "/books/getall":{
+            "get": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Get all Books",
+                "responses": {
+                    "200": {
+                        "description": "List of books"
+                    }
+                }
+            }
+
+        }
+    }
+}
