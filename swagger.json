@@ -2,32 +2,199 @@
     "openapi": "3.0.0",
     "info": {
         "title": "Library Management API",
-        "version": "1.0.0"
+        "version": "1.0.0",
+        "description": "API for managing books and members in a library"
     },
     "servers": [
         {
-            "url":"http://localhost:3000",
-            "description":"Development server"
+            "url": "http://localhost:3000",
+            "description": "Development server"
         },
         {
-            "url":"https://library-system-backend-nakb.onrender.com",
-            "description":"Production server"
+            "url": "https://library-system-backend-nakb.onrender.com",
+            "description": "Production server"
         }
     ],
-    "paths":{
-        "/books/getall":{
-            "get": {
-                "tags": [
-                    "Books"
-                ],
-                "summary": "Get all Books",
-                "responses": {
-                    "200": {
-                        "description": "List of books"
+    "tags": [
+        { "name": "Books", "description": "Manage library books" },
+        { "name": "Members", "description": "Manage library members" }
+    ],
+    "paths": {
+        "/books/create": {
+            "post": {
+                "tags": ["Books"],
+                "summary": "Create a new book",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/BookInput" }
+                        }
                     }
+                },
+                "responses": {
+                    "201": { "description": "Book created successfully" },
+                    "400": { "description": "Missing or invalid fields" },
+                    "500": { "description": "Server error" }
                 }
             }
-
+        },
+        "/books/getAll": {
+            "get": {
+                "tags": ["Books"],
+                "summary": "Get all Books",
+                "responses": {
+                    "200": { "description": "List of books" },
+                    "500": { "description": "Server error" }
+                }
+            }
+        },
+        "/books/update/{id}": {
+            "put": {
+                "tags": ["Books"],
+                "summary": "Update a book",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The book id",
+                        "schema": { "type": "string" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/BookInput" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "description": "Book updated successfully" },
+                    "404": { "description": "Book not found" },
+                    "500": { "description": "Server error" }
+                }
+            }
+        },
+        "/members/create": {
+            "post": {
+                "tags": ["Members"],
+                "summary": "Create a new member",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/MemberInput" }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "description": "Member created successfully" },
+                    "400": { "description": "Missing or invalid fields" },
+                    "500": { "description": "Server error" }
+                }
+            }
+        },
+        "/members/all": {
+            "get": {
+                "tags": ["Members"],
+                "summary": "Get all members",
+                "responses": {
+                    "200": { "description": "List of members" },
+                    "500": { "description": "Server error" }
+                }
+            }
+        },
+        "/members/{id}": {
+            "get": {
+                "tags": ["Members"],
+                "summary": "Get one member by id",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The member id",
+                        "schema": { "type": "string" }
+                    }
+                ],
+                "responses": {
+                    "200": { "description": "The member" },
+                    "404": { "description": "Member not found" },
+                    "500": { "description": "Server error" }
+                }
+            },
+            "put": {
+                "tags": ["Members"],
+                "summary": "Update a member",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The member id",
+                        "schema": { "type": "string" }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/MemberInput" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "description": "Member updated successfully" },
+                    "404": { "description": "Member not found" },
+                    "500": { "description": "Server error" }
+                }
+            },
+            "delete": {
+                "tags": ["Members"],
+                "summary": "Delete a member",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The member id",
+                        "schema": { "type": "string" }
+                    }
+                ],
+                "responses": {
+                    "200": { "description": "Member deleted successfully" },
+                    "404": { "description": "Member not found" },
+                    "500": { "description": "Server error" }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "BookInput": {
+                "type": "object",
+                "required": ["title", "author", "genre", "pages"],
+                "properties": {
+                    "title": { "type": "string", "example": "Dork Diaries" },
+                    "author": { "type": "string", "example": "Rachel Renée Russell" },
+                    "genre": { "type": "string", "example": "Children's Fiction" },
+                    "pages": { "type": "integer", "example": 288 },
+                    "isAvailable": { "type": "boolean", "example": true }
+                }
+            },
+            "MemberInput": {
+                "type": "object",
+                "required": ["fullName", "email"],
+                "properties": {
+                    "fullName": { "type": "string", "example": "Virginie Musau" },
+                    "email": { "type": "string", "example": "virginie@example.com" },
+                    "phone": { "type": "string", "example": "+250788000000" },
+                    "membershipType": { "type": "string", "example": "Standard" },
+                    "isActive": { "type": "boolean", "example": true }
+                }
+            }
         }
     }
 }
