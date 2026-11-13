@@ -1,5 +1,6 @@
+
 const Book = require("../models/Book");
-const { getFirestore } = require('firebase-admin/firestore');
+const { getFirestore } = require("firebase-admin/firestore");
 
 const db = getFirestore();
 
@@ -8,7 +9,6 @@ exports.createBook = async (req, res) => {
     try {
         const { title, author, genre, pages, isAvailable = true } = req.body;
 
-        // Validation
         if (
             !title || !author || !genre ||
             pages === undefined || pages === null ||
@@ -67,23 +67,19 @@ exports.getAllBooks = async (req, res) => {
 };
 
 
-// Update an existing book (PUT)
+// Update an existing book
 exports.updateBook = async (req, res) => {
     try {
         const bookId = req.params.id;
         const updatedData = req.body;
 
-        // Check if the request body is empty
         if (!updatedData || Object.keys(updatedData).length === 0) {
             return res.status(400).json({
                 error: "Please provide book information to update"
             });
         }
 
-        // Find the book in Firestore
         const bookRef = db.collection("books").doc(bookId);
-
-        // Check if the book exists
         const bookSnapshot = await bookRef.get();
 
         if (!bookSnapshot.exists) {
@@ -92,7 +88,6 @@ exports.updateBook = async (req, res) => {
             });
         }
 
-        // Validate allowed fields
         const allowedFields = [
             "title",
             "author",
@@ -112,7 +107,6 @@ exports.updateBook = async (req, res) => {
             });
         }
 
-        // Validate pages
         if (
             updatedData.pages !== undefined &&
             (!Number.isInteger(updatedData.pages) ||
@@ -123,7 +117,6 @@ exports.updateBook = async (req, res) => {
             });
         }
 
-        // Validate availability
         if (
             updatedData.isAvailable !== undefined &&
             typeof updatedData.isAvailable !== "boolean"
@@ -133,7 +126,6 @@ exports.updateBook = async (req, res) => {
             });
         }
 
-        // Update book in Firebase Firestore
         await bookRef.update(updatedData);
 
         res.status(200).json({
@@ -150,4 +142,30 @@ exports.updateBook = async (req, res) => {
 };
 
 
+// Delete an existing book
+exports.deleteBook = async (req, res) => {
+    try {
+        const bookId = req.params.id;
 
+        const bookRef = db.collection("books").doc(bookId);
+        const bookSnapshot = await bookRef.get();
+
+        if (!bookSnapshot.exists) {
+            return res.status(404).json({
+                error: "Book not found"
+            });
+        }
+
+        await bookRef.delete();
+
+        res.status(200).json({
+            message: "Book deleted successfully",
+            bookId: bookId
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            error: error.message
+        });
+    }
+};
