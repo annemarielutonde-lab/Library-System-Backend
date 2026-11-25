@@ -1,46 +1,47 @@
-const express = require('express');
+   const express = require('express');
+const cors = require('cors');
+
+   // 1. Bring in the specific tools we need from the updated firebase-admin library
+   const { initializeApp, cert } = require('firebase-admin/app');
+   const { getFirestore } = require('firebase-admin/firestore');
 
 
-// 1. Bring in the specific tools we need from the updated firebase-admin library
-const { initializeApp, cert } = require('firebase-admin/app');
-const { getFirestore } = require('firebase-admin/firestore');
+   // 2. Load the VIP keys
+   const serviceAccount = require('./Firebase-keys.json');
 
 
-// 2. Load the VIP keys
-const serviceAccount = require('./Firebase-keys.json');
+   // 3. Turn the keys in the ignition using the new 'cert' function
+   initializeApp({
+      credential: cert(serviceAccount)
+   });
 
 
-// 3. Turn the keys in the ignition using the new 'cert' function
-initializeApp({
-   credential: cert(serviceAccount)
-});
+   // 4. Get the database connection
+   const db = getFirestore();
+   const app = express();
+   app.use(cors());
 
 
-// 4. Get the database connection
-const db = getFirestore();
-const app = express();
+   // Teach the server how to read JSON data
+   app.use(express.json());
 
 
-// Teach the server how to read JSON data
-app.use(express.json());
+   // ... (Your app.post routes go here, exactly as they were) ...
+   app.get('/Hello', (req, res) => {
+      res.send('Hello from the server!');    
+   })
+
+   const memberRoutes = require("./src/routes/memberRoutes");
+   app.use("/members", memberRoutes);
+   const bookRoutes = require("./src/routes/bookRoutes")
+   app.use("/books",bookRoutes)
+
+   const swaggerUi = require('swagger-ui-express');
+   const swaggerDocument = require('./swagger.json')
+
+   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
-// ... (Your app.post routes go here, exactly as they were) ...
-app.get('/Hello', (req, res) => {
-    res.send('Hello from the server!');    
-})
-
-const memberRoutes = require("./src/routes/memberRoutes");
-app.use("/members", memberRoutes);
-const bookRoutes = require("./src/routes/bookRoutes")
-app.use("/books",bookRoutes)
-
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger.json')
-
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-
-app.listen(3000, () => {
-   console.log('Kitchen Manager is awake and listening on Port 3000');
-});
+   app.listen(3000, () => {
+      console.log('Kitchen Manager is awake and listening on Port 3000');
+   });

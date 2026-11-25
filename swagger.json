@@ -8,12 +8,12 @@
     },
     "servers": [
         {
-            "url": "http://localhost:3000",
-            "description": "Development server"
-        },
-        {
             "url": "https://library-system-backend-nakb.onrender.com",
             "description": "Production server"
+        },
+           {
+            "url": "http://localhost:3000",
+            "description": "Development server"
         }
     ],
     "tags": [
